@@ -12,7 +12,7 @@ if(directory){
 while((directories = readdir(directory)) != NULL){
         printf("%s\n", directories->d_name);
 }
-close(directory);
+closedir(directory);
 }
 
 return 0;
