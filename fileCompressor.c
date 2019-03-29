@@ -53,7 +53,10 @@ data *frequencies=(data*)malloc(sizeof(data)*20);
             findFiles(entry->d_name);
         }
         else {
-                if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 || strcmp("fileCompressor",entry->d_name)==0)
+               
+                if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
+                strcmp("fileCompressor",entry->d_name)==0 || strcmp("huffman",entry->d_name)==0 ||
+                strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0)
                         continue;
                 printf("%s contains: ",entry->d_name);
                 FILE *pf=fopen(entry->d_name,"r");
