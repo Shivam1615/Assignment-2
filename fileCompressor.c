@@ -8,32 +8,75 @@
 #include <fcntl.h>
 
 typedef struct data{
-        char word;
-        int freq;
+	char *word;
+	int freq;
 } data;
 
-int size=0;
+int wordCount=0;
+int size=500;
+
+void addWord(char *word, data* frequencies){
+        int i=0;
+	
+	while( (*(frequencies+i)).freq!=0){
+		if( strcmp( (*(frequencies+i)).word,word)==0){
+			(*(frequencies+i)).freq+=1;
+			return;
+		}
+		i++;
+	}
+    
+	if( (*(frequencies+i)).freq==0){
+        	(*(frequencies+i)).word=word;
+        	(*(frequencies+i)).freq=1;
+	}
+	wordCount++;
+	return;
+}
 
 void countFreq(FILE *pf, data* frequencies){
 
-        char c;
+	char c;
+	char word[25];
+	strcpy(word,"");
         while((c=fgetc(pf))!=EOF){
-                printf("%c",c);
+        
+        	if( c==' '  || c=='\n'|| c=='\t'){
+			if( strcmp(word,"")!=0){
+				char *temp=(char*)malloc(sizeof(char)*(strlen(word)+1));
+				strcpy(temp,word);
+				addWord(temp,frequencies);
+				strcpy(word,"");
+			}
+			
+			char *whitespace=(char*)malloc(sizeof(char)*4);
+			
+			if(c==' '){ 
+				strcpy(whitespace," ");
+			}
+			else if(c=='\n'){
+				strcpy(whitespace,"\\n");
+			}
+			else if(c=='\t'){
+				strcpy(whitespace,"\\t");
+			}
 
+			addWord(whitespace,frequencies);
+		}else{
+			char letter[2];
+			letter[0]=c;
+			letter[1]='\0';
+			strcat(word,letter);
+		}
+	}
+	fclose(pf);
 
-
-
-
-
-        }
-        fclose(pf);
         return;
 }
 
-void findFiles(char *dir)
-{
 
-data *frequencies=(data*)malloc(sizeof(data)*20);
+void findFiles(char *dir, data* frequencies)
+{	
 
     DIR *d;
     struct dirent *entry;
@@ -50,30 +93,43 @@ data *frequencies=(data*)malloc(sizeof(data)*20);
             if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
                 continue;
             printf("%s/",entry->d_name);
-            findFiles(entry->d_name);
+            findFiles(entry->d_name,frequencies);
         }
         else {
-               
-                if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
+		if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
                 strcmp("fileCompressor",entry->d_name)==0 || strcmp("huffman",entry->d_name)==0 ||
-                strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0)
-                        continue;
-                printf("%s contains: ",entry->d_name);
-                FILE *pf=fopen(entry->d_name,"r");
-                countFreq(pf,frequencies);
-        }
+                strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0 || strcmp("HuffmanCodebook",entry->d_name)==0)	
+		continue;
+
+		printf("%s\n",entry->d_name);
+		FILE *pf=fopen(entry->d_name,"r");
+		countFreq(pf,frequencies);
+	}
     }
     chdir("..");
     closedir(d);
 }
 
-
 int main(int argc, char* argv[])
 {
-        char *currentDir, x[2]=".";
-        currentDir=x;
+	data *frequencies=(data*)calloc(500,sizeof(data)); 
 
-        findFiles(currentDir);
+	if( strcmp(argv[1],"-R")==0){
+		if( strcmp(argv[2],"-b")==0){
+			findFiles(argv[3],frequencies);
+		}
+        	
+	}else if( strcmp(argv[1],"-b")==0){
+		FILE *pf=fopen(argv[2],"r");
+		countFreq(pf,frequencies);
+	}
+	int i;
+	for(i=0;i<wordCount;i++){
 
+		printf("%s %d\n", (*(frequencies+i)).word,(*(frequencies+i)).freq);
+
+	}
+
+	free(frequencies);
         return 0;
 }
