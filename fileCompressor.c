@@ -146,6 +146,9 @@ int main(int argc, char* argv[])
                 countFreq(file,frequencies);
 		free(file);
 	}
+	 if((strcmp(argv[1], "-b") == 0) && (strcmp(argv[2], "-R") == 0)){
+                findFiles(argv[3], frequencies);
+        }
 	int i;
 
 
