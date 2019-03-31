@@ -145,6 +145,15 @@ int main(int argc, char* argv[])
 			chdir("Asst2");
 		}
         	
+	}else if((strcmp(argv[1], "-b") == 0) && (strcmp(argv[2], "-R") == 0)){
+                frequencies=findFiles(argv[3], frequencies);
+
+                int i;
+                for(i=0;i<5;i++){
+                        chdir("Asst2");
+                        chdir("..");
+                        chdir("Asst2");
+		}
 	}else if( strcmp(argv[1],"-b")==0){
 		int fd=open(argv[2],O_RDONLY);
 
