@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_TREE_HT 100 
+#define height 100 
 
 struct BSTNode {
     char *word;
@@ -16,9 +16,11 @@ struct Heap {
     struct BSTNode** array;
 };
 
-struct BSTNode* newNode(char *word, unsigned frequency);
+void insertMinHeap(struct Heap* heap,struct BSTNode* BSTnode);
 
-struct Heap* createMinHeap(unsigned capacity);
+void buildMinHeap(struct Heap* heap);
+
+void printArray(int array[], int length,int fd);
 
 void swapNodes(struct BSTNode** a, struct BSTNode** b);
 
@@ -28,20 +30,18 @@ int checkingSize(struct Heap* heap);
 
 struct BSTNode* min(struct Heap* heap);
 
-void insertMinHeap(struct Heap* heap,struct BSTNode* BSTnode);
-
-void buildMinHeap(struct Heap* heap);
-
-void printArr(int array[], int length);
-
 int ChildNode(struct BSTNode* root);
 
 struct Heap* createAndBuildMinHeap(char *word[], int frequency[], int length);
 
+struct BSTNode* newNode(char *word, unsigned frequency);
+
+struct Heap* createMinHeap(unsigned capacity);
+
 struct BSTNode* HuffmanTree(char *word[], int frequency[], int length);
 
-void printHuffman(struct BSTNode* root, int array[], int up);
+void printHuffman(struct BSTNode* root, int array[], int up,int fd);
 
 void Codes(char *word[], int frequency[], int length);
 
-void getCodeBook();
+void getCodeBook(char *word[],int freqs[],int wordAmount);
