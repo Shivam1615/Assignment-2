@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include "huffman.h"
 
 typedef struct data{
 	char *word;
@@ -34,13 +35,14 @@ void addWord(char *word, data* frequencies){
 	return;
 }
 
-void countFreq(FILE *pf, data* frequencies){
+void countFreq(char *file, data* frequencies){
 
 	char c;
 	char word[25];
 	strcpy(word,"");
-        while((c=fgetc(pf))!=EOF){
-        
+	int i;
+        for(i=0;i<strlen(file);i++){
+        	c=*(file+i);
         	if( c==' '  || c=='\n'|| c=='\t'){
 			if( strcmp(word,"")!=0){
 				char *temp=(char*)malloc(sizeof(char)*(strlen(word)+1));
@@ -68,9 +70,8 @@ void countFreq(FILE *pf, data* frequencies){
 			letter[1]='\0';
 			strcat(word,letter);
 		}
+	
 	}
-	fclose(pf);
-
         return;
 }
 
@@ -101,9 +102,20 @@ void findFiles(char *dir, data* frequencies)
                 strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0 || strcmp("HuffmanCodebook",entry->d_name)==0)	
 		continue;
 
-		printf("%s\n",entry->d_name);
-		FILE *pf=fopen(entry->d_name,"r");
-		countFreq(pf,frequencies);
+		int fileSize;
+
+		if(stat(entry->d_name,&check)==0)
+			fileSize = check.st_size;		
+		char *file=(char*)malloc(sizeof(char)*fileSize+1);
+		int fd=open(entry->d_name,O_RDONLY);
+
+		read(fd,file,fileSize);
+		*(file+fileSize)='\0';
+		printf("%s %d\n",entry->d_name,fileSize);
+		close(fd);
+		
+		countFreq(file,frequencies);
+		free(file);
 	}
     }
     chdir("..");
@@ -120,16 +132,35 @@ int main(int argc, char* argv[])
 		}
         	
 	}else if( strcmp(argv[1],"-b")==0){
-		FILE *pf=fopen(argv[2],"r");
-		countFreq(pf,frequencies);
+		int fd=open(argv[2],O_RDONLY);
+		struct stat check;
+		int fileSize;
+                if(stat(argv[2],&check)==0)
+                        fileSize = check.st_size;
+                char *file=(char*)malloc(sizeof(char)*fileSize+1);
+
+                read(fd,file,fileSize);
+                *(file+fileSize)='\0';
+                close(fd);
+
+                countFreq(file,frequencies);
+		free(file);
 	}
 	int i;
+
+
+	char **arr=(char**)malloc(sizeof(char *)*wordCount);
+	int *freq=(int*)malloc(sizeof(int)*wordCount);
+	
 	for(i=0;i<wordCount;i++){
-
-		printf("%s %d\n", (*(frequencies+i)).word,(*(frequencies+i)).freq);
-
+        	arr[i]=(*(frequencies+i)).word;
+		*(freq+i)=(*(frequencies+i)).freq; 
 	}
+	
+        
+	getCodeBook(arr,freq,wordCount);
 
 	free(frequencies);
         return 0;
 }
+
