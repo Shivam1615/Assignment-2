@@ -16,13 +16,13 @@ typedef struct data{
 int wordCount=0;
 int size=500;
 
-void addWord(char *word, data* frequencies){
+data* addWord(char *word, data* frequencies){
         int i=0;
 	
 	while( (*(frequencies+i)).freq!=0){
 		if( strcmp( (*(frequencies+i)).word,word)==0){
 			(*(frequencies+i)).freq+=1;
-			return;
+			return frequencies;
 		}
 		i++;
 	}
@@ -32,10 +32,11 @@ void addWord(char *word, data* frequencies){
         	(*(frequencies+i)).freq=1;
 	}
 	wordCount++;
-	return;
+
+	return frequencies;
 }
 
-void countFreq(char *file, data* frequencies){
+data* countFreq(char *file, data* frequencies){
 
 	char c;
 	char word[25];
@@ -47,7 +48,7 @@ void countFreq(char *file, data* frequencies){
 			if( strcmp(word,"")!=0){
 				char *temp=(char*)malloc(sizeof(char)*(strlen(word)+1));
 				strcpy(temp,word);
-				addWord(temp,frequencies);
+				frequencies=addWord(temp,frequencies);
 				strcpy(word,"");
 			}
 			
@@ -63,7 +64,7 @@ void countFreq(char *file, data* frequencies){
 				strcpy(whitespace,"\\t");
 			}
 
-			addWord(whitespace,frequencies);
+			frequencies=addWord(whitespace,frequencies);
 		}else{
 			char letter[2];
 			letter[0]=c;
@@ -72,20 +73,19 @@ void countFreq(char *file, data* frequencies){
 		}
 	
 	}
-        return;
+        return frequencies;
 }
 
 
-void findFiles(char *dir, data* frequencies)
+data* findFiles(char *dir, data* frequencies)
 {	
-
     DIR *d;
     struct dirent *entry;
     struct stat check;
-
     if((d = opendir(dir)) == NULL) {
-        fprintf(stderr,"cannot open directory: %s\n", dir);
-        return;
+        printf("cannot open directory: %s\n", dir);
+	exit(1);
+        return frequencies;
     }
     chdir(dir);
     while((entry = readdir(d)) != NULL) {
@@ -93,8 +93,8 @@ void findFiles(char *dir, data* frequencies)
         if(S_ISDIR(check.st_mode)) {
             if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
                 continue;
-            printf("%s/",entry->d_name);
-            findFiles(entry->d_name,frequencies);
+            
+            frequencies=findFiles(entry->d_name,frequencies);
         }
         else {
 		if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
@@ -109,17 +109,24 @@ void findFiles(char *dir, data* frequencies)
 		char *file=(char*)malloc(sizeof(char)*fileSize+1);
 		int fd=open(entry->d_name,O_RDONLY);
 
+		if(fd==-1){
+			printf("Failed to open a file. \n");
+			exit(1);		
+
+		}		
+
 		read(fd,file,fileSize);
 		*(file+fileSize)='\0';
-		printf("%s %d\n",entry->d_name,fileSize);
+		
 		close(fd);
 		
-		countFreq(file,frequencies);
+		frequencies=countFreq(file,frequencies);
 		free(file);
 	}
     }
-    chdir("..");
+   chdir(".."); 
     closedir(d);
+	return frequencies;
 }
 
 int main(int argc, char* argv[])
@@ -128,11 +135,24 @@ int main(int argc, char* argv[])
 
 	if( strcmp(argv[1],"-R")==0){
 		if( strcmp(argv[2],"-b")==0){
-			findFiles(argv[3],frequencies);
+			frequencies=findFiles(argv[3],frequencies);
+		}
+
+		int i;
+		for(i=0;i<5;i++){
+			chdir("Asst2");
+			chdir("..");
+			chdir("Asst2");
 		}
         	
 	}else if( strcmp(argv[1],"-b")==0){
 		int fd=open(argv[2],O_RDONLY);
+
+		if(fd==-1){
+			printf("Failed to open the file. \n");		
+			exit(1);
+		}	
+
 		struct stat check;
 		int fileSize;
                 if(stat(argv[2],&check)==0)
@@ -143,12 +163,9 @@ int main(int argc, char* argv[])
                 *(file+fileSize)='\0';
                 close(fd);
 
-                countFreq(file,frequencies);
+                frequencies=countFreq(file,frequencies);
 		free(file);
 	}
-	 if((strcmp(argv[1], "-b") == 0) && (strcmp(argv[2], "-R") == 0)){
-                findFiles(argv[3], frequencies);
-        }
 	int i;
 
 
@@ -159,11 +176,10 @@ int main(int argc, char* argv[])
         	arr[i]=(*(frequencies+i)).word;
 		*(freq+i)=(*(frequencies+i)).freq; 
 	}
-	
+		
         
 	getCodeBook(arr,freq,wordCount);
-
+	
 	free(frequencies);
         return 0;
 }
-
