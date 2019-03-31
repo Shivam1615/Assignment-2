@@ -2,6 +2,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include "huffman.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+struct Heap* createMinHeap(unsigned capacity) {
+    struct Heap* heap = (struct Heap*)malloc(sizeof(struct Heap));
+    heap->length = 0;
+    heap->capacity = capacity;
+    heap->array = (struct BSTNode**)malloc(heap->capacity * sizeof(struct BSTNode*));
+    return heap;
+}
+
+int checkingSize(struct Heap* heap) {
+
+    return (heap->length == 1);
+}
+
+void swapNodes(struct BSTNode** var1, struct BSTNode** var2){
+
+    struct BSTNode* var3 = *var1;
+    *var1 = *var2;
+    *var2 = var3;
+}
 
 struct BSTNode* newNode(char *word, unsigned frequency) {
     struct BSTNode* temp = (struct BSTNode*)malloc(sizeof(struct BSTNode));
@@ -11,20 +34,6 @@ struct BSTNode* newNode(char *word, unsigned frequency) {
     temp->frequency = frequency;
 
    return temp;
-}
-
-struct Heap* createMinHeap(unsigned capacity) {
-    struct Heap* heap = (struct Heap*)malloc(sizeof(struct Heap));
-    heap->length = 0;
-    heap->capacity = capacity;
-    heap->array = (struct BSTNode**)malloc(heap->capacity * sizeof(struct BSTNode*));
-    return heap;
-}
-void swapNodes(struct BSTNode** var1, struct BSTNode** var2){
-
-    struct BSTNode* var3 = *var1;
-    *var1 = *var2;
-    *var2 = var3;
 }
 
 void heapify(struct Heap* heap, int variable) {
@@ -45,11 +54,6 @@ void heapify(struct Heap* heap, int variable) {
     }
 }
 
-int checkingSize(struct Heap* heap) {
-
-    return (heap->length == 1);
-}
-
 struct BSTNode* min(struct Heap* heap) {
 
     struct BSTNode* temp = heap->array[0];
@@ -58,13 +62,13 @@ struct BSTNode* min(struct Heap* heap) {
     heapify(heap, 0);
     return temp;
 }
+
 void insertMinHeap(struct Heap* heap, struct BSTNode* BSTNode) {
     ++heap->length;
     int i = heap->length - 1;
 
     while (i && BSTNode->frequency < heap->array[(i - 1) / 2]->frequency) {
-
-        heap->array[i] = heap->array[(i - 1) / 2];
+heap->array[i] = heap->array[(i - 1) / 2];
         i = (i - 1) / 2;
     }
 
@@ -80,11 +84,21 @@ void buildMinHeap(struct Heap* heap) {
         heapify(heap, i);
 }
 
-void printArr(int array[], int length) {
+void printArray(int array[], int length,int fd) {
     int i;
-    for (i = 0; i < length; ++i)
-        printf("%d", array[i]);
-        printf("\n");
+
+    char code[25];
+    strcpy(code,"");
+    for (i = 0; i < length; ++i){
+        if(array[i]==1)
+                strcat(code,"1");
+        else
+                strcat(code,"0");
+   //     printf("%d", array[i]); 
+    }
+        write(fd,code,strlen(code));
+
+ //     printf("\n"); 
 }
 
 int ChildNode(struct BSTNode* root) {
@@ -104,11 +118,37 @@ struct Heap* createAndBuildMinHeap(char *word[], int frequency[], int length) {
         return Heap;
 }
 
+void printHuffman(struct BSTNode* root, int array[], int up,int fd) {
+
+    if (root->left) {
+
+        array[up] = 0;
+        printHuffman(root->left, array, up + 1,fd);
+    }
+
+    if (ChildNode(root)) {
+        printArray(array,up,fd);        
+        write(fd,"\t",1);
+        write(fd,root->word,strlen(root->word));
+        write(fd,"\n",1);
+    /*    printf("%s: ", root->word);
+        printArray(array,up,fd);
+*/
+    }
+
+    if (root->right) {
+
+        array[up] = 1;
+        printHuffman(root->right, array, up + 1,fd);
+    }
+}
+
 struct BSTNode* HuffmanTree(char *word[], int frequency[], int length) {
     struct BSTNode *left, *right, *up;
 
     struct Heap* heap = createAndBuildMinHeap(word, frequency, length);
-while (!checkingSize(heap)) {
+
+    while (!checkingSize(heap)) {
 
         left = min(heap);
         right = min(heap);
@@ -125,34 +165,15 @@ while (!checkingSize(heap)) {
     return min(heap);
 }
 
-void printHuffman(struct BSTNode* root, int array[], int up) {
-
-    if (root->left) {
-
-        array[up] = 0;
-        printHuffman(root->left, array, up + 1);
-    }
-
-    if (root->right) {
-
-        array[up] = 1;
-        printHuffman(root->right, array, up + 1);
-    }
-
-    if (ChildNode(root)) {
-
-        printf("%s: ", root->word);
-        printArr(array, up);
-    }
-}
-
 void Codes(char *word[], int frequency[], int length) {
 
     struct BSTNode* root = HuffmanTree(word, frequency, length);
 
-    int array[MAX_TREE_HT], up = 0;
-
-    printHuffman(root, array, up);
+    int array[height], up = 0;
+    int fd=open("HuffmanCodebook", O_CREAT|O_WRONLY,0600);
+    write(fd,"\\\n",2);
+    printHuffman(root, array, up,fd);
+    close(fd);
 }
 
 void getCodeBook(char *word[], int freqs[],int wordAmount) {
