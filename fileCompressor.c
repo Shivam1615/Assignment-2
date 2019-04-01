@@ -233,6 +233,6 @@ int main(int argc, char* argv[])
 	free(frequencies);
 	free(arr);
 	free(freq);
-	compression(argv[2]);
+	Compression(argv[2]);
         return 0;
 }
