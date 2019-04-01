@@ -4,6 +4,11 @@
 
 #define height 100 
 
+typedef struct data{
+	char *word;
+	int freq;
+} data;
+
 struct BSTNode {
     char *word;
     unsigned frequency;
