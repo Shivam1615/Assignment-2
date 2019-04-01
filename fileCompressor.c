@@ -8,11 +8,6 @@
 #include <fcntl.h>
 #include "huffman.h"
 
-typedef struct data{
-	char *word;
-	int freq;
-} data;
-
 int wordCount=0;
 int size=500;
 
