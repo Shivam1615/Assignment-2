@@ -183,6 +183,100 @@ void Compression(char *file){
 	close(new);
 }
 
+void Decompression(char *file){
+        int i;
+        int codes;
+        int words;
+
+        int huffman=open("HuffmanCodebook", O_RDONLY);
+        struct stat check;
+        int HfileSize;
+        if(stat("HuffmanCodebook",&check)==0)
+                HfileSize=check.st_size;
+        char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
+        read(huffman,Hfile,HfileSize);
+        *(Hfile+HfileSize)='\0';
+        close(huffman);
+
+
+        int original=open(file, O_RDONLY);
+        int OfileSize;
+        if(stat(file,&check)==0)
+                OfileSize=check.st_size;
+        char *Ofile=(char*)malloc(sizeof(char)*OfileSize+1);
+        read(original,Ofile,OfileSize);
+        *(Ofile+OfileSize)='\0';
+        close(original);
+
+        for(i=0;i<HfileSize;i++){
+                if(*(Hfile+i)=='\n'){
+                        words++;
+                }
+        }
+
+        char **codeArray=(char**)malloc((sizeof(char*)*words));
+        char **wordArray=(char**)malloc((sizeof(char*)*words));
+        int indexC=0;
+        int indexW=0;
+        char stuff[100];
+        char type='c';
+        strcpy(stuff,"");
+        for(i=2;i<HfileSize;i++){
+        if(type=='c'){
+                char x[2];
+                if((Hfile[i]=='\t')){
+                        char *code=(char*)malloc(sizeof(char)*strlen(stuff));
+                        strcpy(code,stuff);
+                        codeArray[indexC]=code;
+                        indexC++;
+                        strcpy(stuff,"");
+                        type='w';
+                }else{
+                        x[0]=Hfile[i];
+                        x[1]='\0';
+                        strcat(stuff,x);
+                }
+        }
+        else if(type=='w'){
+                char y[2];
+                if(Hfile[i]=='\n'){
+char *word=(char*)malloc(sizeof(char)*strlen(stuff));
+                        strcpy(word,stuff);
+                        wordArray[indexW]=word;
+                        indexW++;
+                        strcpy(stuff,"");
+                        type='c';
+                }else{
+                        y[0]=Hfile[i];
+                        y[1]='\0';
+                        strcat(stuff,y);
+                }
+        }
+        }
+        char newfile[30];
+        char *random = malloc(10 * sizeof(char));
+        for(i = 0; i < strlen(file); i++){
+                if(file[strlen(file)-1] == 'z' && file[strlen(file)-2] == 'c' && file[strlen(file)-3] == 'h'){
+                        break;
+                }else{
+                        random[0] = file[i];
+                        random[1] = '\0';
+                        strcpy(newfile, random);
+                 }
+        }
+        int new=open(newFile, O_CREAT | O_WRONLY, 0600);
+        strcpy(stuff,"");
+
+        for(i = 0; i < OfileSize; i++){
+                char x[2];
+
+
+        }
+
+
+
+}
+
 data* findFiles(char *dir, data* frequencies)
 {	
     DIR *d;
