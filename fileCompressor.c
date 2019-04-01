@@ -76,48 +76,6 @@ data* countFreq(char *file, data* frequencies){
         return frequencies;
 }
 
-
-void Compression(char *file){
-
-        int codes;
-        int words;
-
-        int huffman=open("HuffmanCodebook", O_RDONLY);
-        struct stat check;
-        int HfileSize;
-        if(stat("HuffmanCodebook",&check)==0)
-                HfileSize=check.st_size;
-        char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
-        read(huffman,Hfile,HfileSize);
-        *(Hfile+HfileSize)='\0';
-        close(huffman);
-
-
-        int original=open(file, O_RDONLY);
-        int OfileSize;
-        if(stat(file,&check)==0)
-                OfileSize=check.st_size;
-        char *Ofile=(char*)malloc(sizeof(char)*OfileSize+1);
-        read(original,Ofile,OfileSize);
-        *(Ofile+OfileSize)='\0';
-        close(original);
-
-        int i;
-        for(i=0;i<HfileSize;i++){
-                if(*(Hfile+i)=='\t'){
-                        codes++;
-                }
-        }
-        for(i=0;i<OfileSize;i++){
-                if(*(Ofile+i)==' '){
-                        words++;
-                }
-        }
-
-
-
-}
-
 void Compression(char *file){
 
 	int codes;
