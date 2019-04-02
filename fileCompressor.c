@@ -492,7 +492,7 @@ int main(int argc, char* argv[])
 		printf("Failed to open a file. \n");
 		exit(1);		
 
-	}	
+	}		
 
 	struct stat check;
 	int HfileSize;
