@@ -1,1 +1,143 @@
+Test Case1:
 
+Input: ./fileCompressor -R -b ./
+
+Output: Generates a HuffmanCodebook
+
+        \
+0
+1000    \t
+1001000 jwj
+1001001 dydgjwqd
+1001010 wwfvwe
+1001011 feufgeyfe
+1001100 fefweuueiwwe
+1001101 efeuife
+100111  houses
+1010000 dbbjwbw
+1010001 h
+1010010 dgw
+1010011 qw
+10101   f
+1011000 cats
+1011001 dcededbecdjhc
+1011010 ewe
+1011011 fe
+1011100 djbhebhj
+1011101 dogs
+101111  cdhc
+1100000 efewdewuydfewydgewyfdgwetfdtywefdy
+1100001 3243
+110001  systems
+1100100 fwefwefew
+1100101 fb
+1100110 vedvedv
+1100111 eewjdw
+1101    \n
+1110000 fwef
+1110001 shivam
+1110010 dd
+1110011 Hello
+1110100 wwejnewjknekwdew
+1110101 yfwefew
+1110110 ef
+1110111 mydhavalmydhavaldcededbecdjhcHello
+11110   dhaval
+111110  eshan
+111111  dhanush
+
+Test Case2:
+
+Input: ./fileCompressor -R -c ./ ./HuffmanCodebook
+
+Output: creates a compressed file
+
+10010000100100101100111010100101000100010001100100010010101101110011010001010000100010001011100010001110101110110101010101010101010101010110110111000001110110010110100111010001001100011000001101
+
+Test Case3:
+
+Input: ./fileCompressor -R -d ./ ./HuffmanCodebook
+
+Output: Creates a decompressed file
+
+jwj dydgjwqd eewjdw dgw                 fwefwefew wwfvwe
+vedvedv dbbjwbw         djbhebhj        yfwefew
+f f f f fe fwef ef ewe wwejnewjknekwdew fefweuueiwwe efewdewuydfewydgewyfdgwetfdtywefdy
+
+
+Test Case4:
+
+Input: ./fileCompressor -b ./file2.txt
+
+Output: creates a HuffmanCodebook
+
+\
+000
+00100   vbefvbhfjebvhjefbvhjefbvj
+00101   vbdvbdebvhjedbhjebvhjebvhjebvr
+001100  wfbeehjbrebferhjbfrefehfehfeuhfe
+001101  fefefefhebfhebfebfef
+001110  ibebehjejvebvejvhebvejve
+001111  berfbrehjfbebfehfbefje3bf
+01      \t
+100000  jkwbhjewbfhjewbfhejwfbekwbfhejfbjeh
+100001  hbvhjefbvhjefbvhfejvefjv
+100010  g
+100011  eshan
+100100  wuicwiw
+100101  bfhvhjfebvhjfbvchjfebvhjfbvejvbefhjvbhjfdbvjv
+100110  dhanush
+100111  ewbdewjbfebfefbw
+101000  gugyggefvuye
+101001  bew
+101010  Kirtana
+101011  dhaval
+101100  idcdcwbhe
+101101  fbhbfhjbhjebeberberhbreber
+101110  gg
+101111  efbrefbewfewf
+11      \n
+lo
+11110   dhaval
+111110  eshan
+111111  dhanush
+
+Test Case5:
+
+Input: ./fileCompressor -c ./file2.txt ./HuffmanCodebook
+
+Output:
+11001001111100101110010101011010010100000000000001010110110011101101110011001100110111100110111001111110001111101111111010111110010011101010010110111001011000100110100011100000111100111111
+
+
+Test Case6:
+
+Input: ./fileCompressor -d ./file2.txt.hcz ./HuffmanCodebook
+
+Output:
+
+vbefvbhfjebvhjefbvhjefbvj
+
+bfhvhjfebvhjfbvchjfebvhjfbvejvbefhjvbhjfdbvjv
+vbdvbdebvhjedbhjebvhjebvhjebvr          bew                             idcdcwbhe
+fbhbfhjbhjebeberberhbreber
+wfbeehjbrebferhjbfrefehfehfeuhfe
+fefefefhebfhebfebfef
+dhanush
+ewbdewjbfebfefbw
+eshan
+efbrefbewfewf
+dhaval
+wuicwiw
+Kirtana         gg              g       gugyggefvuye
+jkwbhjewbfhjewbfhejwfbekwbfhejfbjeh
+
+berfbrehjfbebfehfbefje3bfbfhejwfbekwbfhejfbjeh
+
+berfbrehjfbebfehfbefje3bf
+
+Test Case 6:
+
+Input:  ./fileCompressor -a -R
+
+Output: This is not a flag; please enter the right argument again.
