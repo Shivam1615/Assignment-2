@@ -492,7 +492,11 @@ int main(int argc, char* argv[])
 		printf("Failed to open a file. \n");
 		exit(1);		
 
-	}		
+	}	
+	else if((strcmp(argv[1], "-b") != 0) && (strcmp(argv[1], "-c") != 0) && (strcmp(argv[1], "-R") != 0) && (strcmp(argv[1], "-d") != 0)){
+                printf("This is not a flag; please enter the right argument again.\n");
+                exit(1);
+        }
 
 	struct stat check;
 	int HfileSize;
