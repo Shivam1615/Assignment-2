@@ -15,7 +15,7 @@ typedef struct data{
 } data;
 
 int wordCount=0;
-
+//adds word into the linked list or iterates the frequancies
 void addWord(char *word, data* frequencies){
 	data *trans=frequencies;
 	while(trans!=NULL){
@@ -38,6 +38,7 @@ void addWord(char *word, data* frequencies){
 	wordCount++;
         return;
 }
+//tokenizes a string sent from a file
 void countFreq(char *file, data* frequencies){
 	char c;
 	char word[25];
@@ -75,7 +76,7 @@ void countFreq(char *file, data* frequencies){
         return;
 }
 
-
+//creates a deCompressed file
 void deCompression(char *file, char *Hfile){
 
 	int codes=0;
@@ -96,6 +97,7 @@ void deCompression(char *file, char *Hfile){
 			codes++;
 		}
 	}
+	//put info of HuffmanCodebook into arrays
 	char **codeArray=(char**)malloc((sizeof(char*)*codes));
 	char **wordArray=(char**)malloc((sizeof(char*)*codes));
 	int indexC=0;
@@ -135,7 +137,7 @@ void deCompression(char *file, char *Hfile){
                 }
         }
 	}
-
+	//creat the new decompressed file
 	char newFile[20];
 	strncpy(newFile,file,strlen(file)-4);
 	int new=open(newFile, O_CREAT | O_WRONLY, 0600);		
@@ -163,10 +165,9 @@ void deCompression(char *file, char *Hfile){
 	close(new);
 
 }
-
+// creates a compressed file
 void Compression(char *file, char *Hfile){
 	
-	printf("%s\n",Hfile);
 	int codes=0;
 	int words;
 	struct stat check;
@@ -185,7 +186,7 @@ void Compression(char *file, char *Hfile){
 			codes++;
 		}
 	}
-	
+	//put info of Codebook into arrays
 	char **codeArray=(char**)malloc((sizeof(char*)*codes));
 	char **wordArray=(char**)malloc((sizeof(char*)*codes));
 	int indexC=0;
@@ -226,6 +227,7 @@ void Compression(char *file, char *Hfile){
         }
 	}
 
+	//creates new compressed file
 	char newFile[20];
 	strcpy(newFile,file);
 	strcat(newFile,".hcz");
@@ -269,7 +271,7 @@ void Compression(char *file, char *Hfile){
 	}
 	close(new);
 }
-
+//recursively traverse the directories
 void findFiles(char *dir, data* frequencies, char flag,char *Hfile)
 {	
     DIR *d;
@@ -292,7 +294,8 @@ void findFiles(char *dir, data* frequencies, char flag,char *Hfile)
         else {
 		if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
                 strcmp("fileCompressor",entry->d_name)==0 || strcmp("huffman",entry->d_name)==0 || strcmp("huffman.o",entry->d_name)==0||
-                strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0 || strcmp("HuffmanCodebook",entry->d_name)==0)	
+                strcmp("huffman.c",entry->d_name)==0 || strcmp("huffman.h",entry->d_name)==0 || strcmp("HuffmanCodebook",entry->d_name)==0||
+		strcmp("readme.pdf",entry->d_name)==0||strcmp("testplan.txt",entry->d_name)==0)	
 		continue;
 		int name=strlen(entry->d_name);
 	if(flag=='b'){
@@ -342,7 +345,8 @@ void findFiles(char *dir, data* frequencies, char flag,char *Hfile)
 }
 
 int main(int argc, char* argv[])
-{
+{	
+	//linked list for frequancies
 	char head[5];
 	strcpy(head,"@#&$");
 	data *frequencies=(data*)malloc(sizeof(data));
@@ -350,8 +354,14 @@ int main(int argc, char* argv[])
 	frequencies->freq=-1;
 	frequencies->next=NULL;
 
+	if( strcmp(argv[2],"-R")==0){
+		printf("Flags in wrong order, -R should be first\n");
+		exit(1); 
+	}
+
 	if( strcmp(argv[1],"-R")==0){
-		if( strcmp(argv[2],"-b")==0){
+		if( strcmp(argv[2],"-b")==0){ // recursive -b flag
+			
 			findFiles(argv[3],frequencies,'b',argv[2]);
 		
 		int i =0;
@@ -379,7 +389,7 @@ int main(int argc, char* argv[])
 		free(arr);
 		free(freq);
 
-		}else if( strcmp(argv[2],"-c")==0){
+		}else if( strcmp(argv[2],"-c")==0){// recursive -c flag
 
 			int huffman=open("HuffmanCodebook", O_RDONLY);
 			struct stat check;
@@ -393,7 +403,7 @@ int main(int argc, char* argv[])
 
 			findFiles(argv[3],frequencies,'c',Hfile);
 
-		}else if( strcmp(argv[2],"-d")==0){
+		}else if( strcmp(argv[2],"-d")==0){// recursive -d flag
 
 			int huffman=open("HuffmanCodebook", O_RDONLY);
 			struct stat check;
@@ -410,7 +420,7 @@ int main(int argc, char* argv[])
 		}
         	
 	}
-	if( strcmp(argv[1],"-b")==0){
+	if( strcmp(argv[1],"-b")==0){// normal -b flag
 		int fd=open(argv[2],O_RDONLY);
 
 		if(fd==-1){
@@ -450,13 +460,20 @@ int main(int argc, char* argv[])
 	free(freq);
 
 
-	}else if( strcmp(argv[1],"-c")==0){
+	}else if( strcmp(argv[1],"-c")==0){//normal -c flag
 
 
 
 
 
 	int huffman=open("HuffmanCodebook", O_RDONLY);
+
+	if(huffman==-1){
+		printf("Failed to open a file. \n");
+		exit(1);		
+
+	}		
+
 	struct stat check;
 	int HfileSize;
 	if(stat("HuffmanCodebook",&check)==0)
@@ -470,6 +487,13 @@ int main(int argc, char* argv[])
 	}else if( strcmp(argv[1],"-d")==0){
 
 	int huffman=open("HuffmanCodebook", O_RDONLY);
+
+	if(huffman==-1){
+		printf("Failed to open a file. \n");
+		exit(1);		
+
+	}		
+
 	struct stat check;
 	int HfileSize;
 	if(stat("HuffmanCodebook",&check)==0)
