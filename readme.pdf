@@ -1,1 +1,28 @@
+NETID: srp218, dsg126
+
+Owners: Shivam Patel, Dhanush Gandham
+
+					Project Analysis
+
+
+OVERALL WORK:
+	 For this project, we both were required to learn how to use system calls read, open, write, and close. We had to create multiple Data structures and store information in order to organize all the tokens in every file and be able to convert it to huffman coding by using min heaps and trees. The first thing that we did in this assignment was learn how to use dirent and play around with the struct in order to be able to print out files in the same directory. Then we learned how to recursively print out all the directories and files along with the paths involved. After doing that, we tokenized all the strings and characters that we found and counted the frequencies using parallel arrays. One array was created in order to store all the words and another array was created in order to store all frequencies so that we were able to create a BST that takes the top 2 and stores them in a min heap. Then after that, we formed the huffman tree and were able to create a huffman codebook that stores the binary codes and the words. After this, we recursively build codebook and compress and decompress them in a similar manner as well.
+
+Tokenizer step: 
+	Our first step was make a fileCompressor source file and then be able to create methods that tokenized our characters and strings in the files. One of our methods was addWord, which stores words in a linked list manner and then we created structures that had frequencies and words that were its member. This method would find words everytime and then it would be able to insert into the parallel arrays that we created. Also, then we were able take into account for the white spaces and the control codes as we treated all of the tokens as delimiters. 
+
+Huffman Tree step:
+	Our next step was to be able to create a binary search tree by using min heaps everytime we find the top 2 frequencies and we do this until we used up all the words. After this, we formed a huffman tree that had words and had frequencies for each node of the tree. This overall formed a tree and then we traversed the trees by having each left branches as 0’s and each right branches as 1’s. After traversing the trees, then we were able to match each code with 0’s and 1’s with each word. We had a source code called huffman.c that did all of the huffman tree and huffman.c that stored all of the structs and the function prototypes. 
+
+Huffman Codebook:
+	After creating a huffman tree as previously stated, we generated a huffman codebook that stores all of the words on the right side and the binary codes from the huffman tree on the left side of the codebook. This would be generated everytime we call the build method and we also did this recursively for all subdirectories and all of the files. This way, the words and the characters along with the control codes were stored. This codebook was generated and was used in order to compress and decompress the files. 
+
+Compressing files:
+	We compressed files by using the Huffman Codebook as this stored all of the binary codes for each words. After building the Huffman Codebook, we created a new file that had our file.txt.hcz and this stored the binary codes. In order to extract the binary codes from the Huffman Codebook, we used two parallel arrays. Our first parallel array was created in order to store all of the words called WordsArray and our other parallel array was called CodesArray. Then since we have to compress all of the words in the files, we only have to look for the codes from the huffman codebook. So we compare the codes from our CodesArray with the codes from the Huffman Codebook. If they match, then we write() to the new file created for every codes that are the same from the Huffman Codebook. The final output was the new file.txt.hcz with the binary codes stored as compressed in the file.
+
+De-compressed files:
+	We decompressed the files by also using the Huffman Codebook from building the book and having to compress the file first. After compressing the file, we have the binary codes only and then we were able to create a new file that was file.txt from the file.txt.hcz by decompressing that file. The way we decompressed the file was similar to how we compressed the files. We used system calls to open the files and then being able to extract information from them using read() and using write() and open(). We created parallel arrays for both codes array and words array. In order to tokenize this, checked to see if the codes are the same for both the new file and the huffman codebook file. Then we matched each code and found its counterpart, which were the words and we were able to write() to the new file that only stores the words. Our final output was the new file created with the decompressed words that is supposed to be equal to the original file before being compressed. 
+
+Time and Space usage:
+	For our huffman tree, we used a BST and this was done using min-heaps along side of the binary search tree. The tree itself creates an O(log n) for the huffman tree as it recursively descends through all of the nodes and then traverses through it in order to get all of the binary codes. The space usage was higher since time was used in a more efficient manner than space allocation. 
 
