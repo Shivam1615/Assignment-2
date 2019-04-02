@@ -76,21 +76,11 @@ void countFreq(char *file, data* frequencies){
 }
 
 
-void deCompression(char *file){
+void deCompression(char *file, char *Hfile){
 
 	int codes=0;
 	int words;
-
-	int huffman=open("HuffmanCodebook", O_RDONLY);
 	struct stat check;
-	int HfileSize;
-	if(stat("HuffmanCodebook",&check)==0)
-		HfileSize=check.st_size;
-	char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
-	read(huffman,Hfile,HfileSize);
-	*(Hfile+HfileSize)='\0';
-	close(huffman);
-
         int original=open(file, O_RDONLY);
 	int OfileSize;
         if(stat(file,&check)==0)
@@ -101,7 +91,7 @@ void deCompression(char *file){
         close(original);
 
 	int i;
-	for(i=0;i<HfileSize;i++){
+	for(i=0;i<strlen(Hfile);i++){
 		if(*(Hfile+i)=='\t'){
 			codes++;
 		}
@@ -113,7 +103,7 @@ void deCompression(char *file){
 	char stuff[50];
 	char type='c';
 	strcpy(stuff,"");
-	for(i=2;i<HfileSize;i++){
+	for(i=2;i<strlen(Hfile);i++){
 	if(type=='c'){
 		char x[2];
 		if((Hfile[i]=='\t')){
@@ -174,21 +164,12 @@ void deCompression(char *file){
 
 }
 
-void Compression(char *file){
-
+void Compression(char *file, char *Hfile){
+	
+	printf("%s\n",Hfile);
 	int codes=0;
 	int words;
-
-	int huffman=open("HuffmanCodebook", O_RDONLY);
 	struct stat check;
-	int HfileSize;
-	if(stat("HuffmanCodebook",&check)==0)
-		HfileSize=check.st_size;
-	char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
-	read(huffman,Hfile,HfileSize);
-	*(Hfile+HfileSize)='\0';
-	close(huffman);
-
         int original=open(file, O_RDONLY);
 	int OfileSize;
         if(stat(file,&check)==0)
@@ -199,7 +180,7 @@ void Compression(char *file){
         close(original);
 
 	int i;
-	for(i=0;i<HfileSize;i++){
+	for(i=0;i<strlen(Hfile);i++){
 		if(*(Hfile+i)=='\t'){
 			codes++;
 		}
@@ -212,7 +193,7 @@ void Compression(char *file){
 	char stuff[100];
 	char type='c';
 	strcpy(stuff,"");
-	for(i=2;i<HfileSize;i++){
+	for(i=2;i<strlen(Hfile);i++){
 	if(type=='c'){
 		char x[2];
 		if((Hfile[i]=='\t')){
@@ -289,7 +270,7 @@ void Compression(char *file){
 	close(new);
 }
 
-void findFiles(char *dir, data* frequencies, char flag)
+void findFiles(char *dir, data* frequencies, char flag,char *Hfile)
 {	
     DIR *d;
     struct dirent *entry;
@@ -306,7 +287,7 @@ void findFiles(char *dir, data* frequencies, char flag)
             if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
                 continue;
             
-            findFiles(entry->d_name,frequencies,flag);
+            findFiles(entry->d_name,frequencies,flag,Hfile);
         }
         else {
 		if( strcmp("fileCompressor.c",entry->d_name)==0 || strcmp("Makefile",entry->d_name)==0 ||
@@ -342,12 +323,12 @@ void findFiles(char *dir, data* frequencies, char flag)
 	}else if(flag=='c'){
 		
 		if( entry->d_name[name-3]=='h' & entry->d_name[name-2]=='c' & entry->d_name[name-1]=='z'){continue;}
-			Compression(entry->d_name);
+			Compression(entry->d_name,Hfile);
 
 	}else if(flag=='d'){
 
 		if( entry->d_name[name-3]=='h' & entry->d_name[name-2]=='c' & entry->d_name[name-1]=='z'){
-			deCompression(entry->d_name);
+			deCompression(entry->d_name,Hfile);
 		}
 		}else{
 			continue;
@@ -371,7 +352,7 @@ int main(int argc, char* argv[])
 
 	if( strcmp(argv[1],"-R")==0){
 		if( strcmp(argv[2],"-b")==0){
-			findFiles(argv[3],frequencies,'b');
+			findFiles(argv[3],frequencies,'b',argv[2]);
 		
 		int i =0;
 		frequencies=frequencies->next;	
@@ -399,7 +380,33 @@ int main(int argc, char* argv[])
 		free(freq);
 
 		}else if( strcmp(argv[2],"-c")==0){
-			findFiles(argv[3],frequencies,'c');
+
+			int huffman=open("HuffmanCodebook", O_RDONLY);
+			struct stat check;
+			int HfileSize;
+			if(stat("HuffmanCodebook",&check)==0)
+			HfileSize=check.st_size;
+			char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
+			read(huffman,Hfile,HfileSize);
+			*(Hfile+HfileSize)='\0';
+			close(huffman);
+
+			findFiles(argv[3],frequencies,'c',Hfile);
+
+		}else if( strcmp(argv[2],"-d")==0){
+
+			int huffman=open("HuffmanCodebook", O_RDONLY);
+			struct stat check;
+			int HfileSize;
+			if(stat("HuffmanCodebook",&check)==0)
+			HfileSize=check.st_size;
+			char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
+			read(huffman,Hfile,HfileSize);
+			*(Hfile+HfileSize)='\0';
+			close(huffman);
+
+			findFiles(argv[3],frequencies,'d',Hfile);
+
 		}
         	
 	}
@@ -444,9 +451,35 @@ int main(int argc, char* argv[])
 
 
 	}else if( strcmp(argv[1],"-c")==0){
-		Compression(argv[2]);
+
+
+
+
+
+	int huffman=open("HuffmanCodebook", O_RDONLY);
+	struct stat check;
+	int HfileSize;
+	if(stat("HuffmanCodebook",&check)==0)
+		HfileSize=check.st_size;
+	char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
+	read(huffman,Hfile,HfileSize);
+	*(Hfile+HfileSize)='\0';
+	close(huffman);
+
+		Compression(argv[2],Hfile);
 	}else if( strcmp(argv[1],"-d")==0){
-		deCompression(argv[2]);
+
+	int huffman=open("HuffmanCodebook", O_RDONLY);
+	struct stat check;
+	int HfileSize;
+	if(stat("HuffmanCodebook",&check)==0)
+		HfileSize=check.st_size;
+	char *Hfile=(char*)malloc(sizeof(char)*HfileSize+1);
+	read(huffman,Hfile,HfileSize);
+	*(Hfile+HfileSize)='\0';
+	close(huffman);
+
+		deCompression(argv[2],Hfile);
 	}
 	
         return 0;
