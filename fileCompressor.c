@@ -354,13 +354,27 @@ int main(int argc, char* argv[])
 	frequencies->freq=-1;
 	frequencies->next=NULL;
 
-	if( strcmp(argv[2],"-R")==0){
-		printf("Flags in wrong order, -R should be first\n");
-		exit(1); 
+	if( argc<3 ){
+		printf("not enough inputs\n");
+		exit(1);
 	}
 
-	if( strcmp(argv[1],"-R")==0){
-		if( strcmp(argv[2],"-b")==0){ // recursive -b flag
+	int R=1;
+	int f=2;
+	if( strcmp(argv[2],"-R")==0){
+		R=2;
+		f=1; 
+	}
+
+if( strcmp(argv[R],"-R")==0){
+	
+		if(argc<4){
+			printf("not enough inputs\n");
+			exit(1);
+		}
+
+
+		if( strcmp(argv[f],"-b")==0){ // recursive -b flag
 			
 			findFiles(argv[3],frequencies,'b',argv[2]);
 		
@@ -389,7 +403,7 @@ int main(int argc, char* argv[])
 		free(arr);
 		free(freq);
 
-		}else if( strcmp(argv[2],"-c")==0){// recursive -c flag
+		}else if( strcmp(argv[f],"-c")==0){// recursive -c flag
 
 			int huffman=open("HuffmanCodebook", O_RDONLY);
 			struct stat check;
@@ -403,7 +417,7 @@ int main(int argc, char* argv[])
 
 			findFiles(argv[3],frequencies,'c',Hfile);
 
-		}else if( strcmp(argv[2],"-d")==0){// recursive -d flag
+		}else if( strcmp(argv[f],"-d")==0){// recursive -d flag
 
 			int huffman=open("HuffmanCodebook", O_RDONLY);
 			struct stat check;
@@ -419,7 +433,7 @@ int main(int argc, char* argv[])
 
 		}
         	
-	}
+}else{
 	if( strcmp(argv[1],"-b")==0){// normal -b flag
 		int fd=open(argv[2],O_RDONLY);
 
@@ -459,12 +473,7 @@ int main(int argc, char* argv[])
 	free(arr);
 	free(freq);
 
-
 	}else if( strcmp(argv[1],"-c")==0){//normal -c flag
-
-
-
-
 
 	int huffman=open("HuffmanCodebook", O_RDONLY);
 
@@ -504,7 +513,11 @@ int main(int argc, char* argv[])
 	close(huffman);
 
 		deCompression(argv[2],Hfile);
+	}else{
+		printf("Incorrect flag input");
+		exit(1);
+
 	}
-	
+}
         return 0;
 }
